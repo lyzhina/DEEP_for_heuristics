@@ -1,12 +1,12 @@
 package packing;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+
 
 import org.ini4j.Ini;
 
 public class Heuristics {
-    public void heuristic(String recombination_gamma, String recombination_strategy, String gamma_init, File ini_file){
+    public void make_heuristic(String recombination_gamma, String recombination_strategy, String gamma_init, File ini_file){
         try {
             Ini ini = new Ini(ini_file);
             ini.put("default_settings", "recombination_gamma", recombination_gamma);
@@ -16,8 +16,12 @@ public class Heuristics {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+    public void run_heuristic(File ini_file){
         try {
-            Process p = Runtime.getRuntime().exec(String.format("/home/maria_lyzhina/bin/deepmethod --default-name=/home/maria_lyzhina/combinations/deep_rastr.ini"));
+            String file_name = ini_file.getName();
+            Process p = Runtime.getRuntime().exec(String.format("/home/maria_lyzhina/bin/deepmethod --default-name=/home/maria_lyzhina/combinations/%s", file_name));
             int exitCode = p.waitFor();
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -26,4 +30,5 @@ public class Heuristics {
             e.printStackTrace();
         }
     }
+
 }

@@ -1,0 +1,15 @@
+[recombination_gamma]
+0.9
+0.3
+[recombination_strategy]
+de_3_bin
+de_3_exp
+de_3_exp_T
+de_3_bin_T
+de_3_bin_rand
+de_3_exp_rand
+de_3_bin_self
+de_3_exp_self
+[gamma_init]
+0.9
+0.3
