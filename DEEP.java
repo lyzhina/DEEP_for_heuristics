@@ -1,20 +1,42 @@
-package packing;
+//package packing;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 import static java.lang.Math.*;
 
 public class DEEP {
-    private File filename;
+    private static File filename;
 
     public DEEP(File filename) {
         this.filename = filename;
     }
+    public static double x[] = {0, 0, 0};
 
+    public static double parse_answer(File log_file){
+        try(Scanner sc = new Scanner(log_file)) {
+            String log_line;
+            char tmp[] = new char[1024];
+            log_line = sc.nextLine();
+            System.out.println(log_line);
+            String part1[] = log_line.split("]:");
+            String part2[] = part1[1].split(" ");
+            String part3[] = part1[2].split(" ");
+            x[0] = Double.parseDouble(part2[0]);
+            x[1] = Double.parseDouble(part3[0]);
+            x[2] = Double.parseDouble(part1[3]);
+            System.out.println(Arrays.toString(x));
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
+        }
+        return 0;
+    }
 
-    public void createSolution(String heuristics) throws IOException {
-        Combinations[] comb = new Combinations[32];
+    public static void createSolution(String heuristics) throws IOException {
+        Combinations[] comb = Combinations.comb_set();
         int c = 0;
         char heuristic = heuristics.charAt(c);
         switch (heuristic) {
@@ -71,5 +93,16 @@ public class DEEP {
     private static double calculateFitness(ArrayList<Double> xx) {
         double fitness = rastrign_func(xx);
         return  fitness;
+    }
+
+    public static void main(String[] args) {
+//        try {
+//            File curr_file = new File("deep_rastr.ini");
+//            DEEP solution = new DEEP(curr_file);
+//            solution.createSolution("AB");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        parse_answer(new File("ini_file0.ini.log"));
     }
 }
