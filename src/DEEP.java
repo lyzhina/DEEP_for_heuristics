@@ -1,5 +1,4 @@
 //package packing;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,15 +38,17 @@ public class DEEP {
         switch (heuristic) {
             case 'A':
                 Heuristics heur0 = new Heuristics();
-                heur0.make_heuristic(comb[0].recombination_gamma, comb[0].recombination_strategy, comb[0].gamma_init, filename);
-                heur0.run_heuristic(filename);
+                String section1 = "default_settings1";
+                heur0.make_heuristic(comb[0].recombination_gamma, comb[0].recombination_strategy, comb[0].gamma_init, filename, section1);
+                heur0.run_heuristic(filename, section1);
 //                TODO очищение лога
                 break;
 
             case 'B':
                 Heuristics heur1 = new Heuristics();
-                heur1.make_heuristic(comb[1].recombination_gamma, comb[1].recombination_strategy, comb[1].gamma_init, filename);
-                heur1.run_heuristic(filename);
+                String section2 = "default_settings2";
+                heur1.make_heuristic(comb[1].recombination_gamma, comb[1].recombination_strategy, comb[1].gamma_init, filename, section2);
+                heur1.run_heuristic(filename, section2);
                 break;
         }
 
@@ -93,13 +94,13 @@ public class DEEP {
         try {
             File curr_file = new File("deep_rastr.ini");
             DEEP solution = new DEEP(curr_file);
-            solution.createSolution("AB");
+            solution.createSolution("BA");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        parsed_answer(new File("deep_rastr.ini-deep-output"), 3);
-        System.out.println(Arrays.toString(x));
-
-        System.out.println(parse_fitness(new File("deep_rastr.ini.log")));
+//        parsed_answer(new File("deep_rastr.ini-deep-output"), 3);
+//        System.out.println(Arrays.toString(x));
+//
+//        System.out.println(parse_fitness(new File("deep_rastr.ini.log")));
     }
 }

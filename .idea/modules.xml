@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/hyp_deep.iml" filepath="$PROJECT_DIR$/hyp_deep.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hd.iml" filepath="$PROJECT_DIR$/hd.iml" />
     </modules>
   </component>
 </project>
