@@ -1,5 +1,3 @@
-//package packing;
-
 import java.io.*;
 import java.util.ArrayList;
 

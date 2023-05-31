@@ -10,7 +10,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/BPP2.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/DistrGenAlg.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/GenAlg.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/ini4j-0.5.4.jar!/" />

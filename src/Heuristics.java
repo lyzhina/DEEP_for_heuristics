@@ -1,5 +1,3 @@
-//package packing;
-
 import java.io.*;
 
 
@@ -18,19 +16,39 @@ public class Heuristics {
         }
 
     }
-    public void run_heuristic(File ini_file, String section){
-        try {
+    public String run_heuristic(File ini_file, String section){
+        double fit = 100;
+        String part = "100.000000000000 ";
+        try
+        {
             String file_name = ini_file.getName();
-            // TODO сделать путь параметром
-            Process p = Runtime.getRuntime().exec(String.format("/home/maria_lyzhina/bin/deepmethod --default-name=/home/maria_lyzhina/hd/%s --settings-group=%s --settings-file=/home/maria_lyzhina/hd/%s", file_name,section,file_name));
-            // TODO перенаправить ввод вывод stdout
-            int exitCode = p.waitFor();
+
+            Process p = Runtime.getRuntime().exec(String.format("deepmethod --default-name=%s --settings-group=%s --settings-file=%s", file_name,section,file_name));
+
+
+            String line ;
+            String log_line = "wtime:-3.313857e+01 tau:14 freeze:0 score:100.000000000000 ";
+            String log_line1 = "wtime:-3.313857e+01 tau:14 freeze:0 score:100.000000000000 ";
+            final BufferedReader ir = new BufferedReader ( new InputStreamReader ( p.getInputStream () ) ) ;
+            while ( null != (line = ir.readLine ()) )
+            {
+
+                log_line = line;
+            }
+
+            String part1[] = log_line.split("cost:");
+            System.out.println(part1[1]);
+
+            p.waitFor () ;
+
+            part = part1[1];
+
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return part;
     }
 
 }

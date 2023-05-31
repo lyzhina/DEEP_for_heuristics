@@ -1,4 +1,3 @@
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -32,8 +31,9 @@ public class Runnable {
 
 
         DeepProblem bpp = new DeepProblem();
-        bpp.setFilename("deep_rastr.ini");
-        String heuristics = "AB";
+        bpp.setFilename("deep_clust.ini");
+        String heuristics = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef";
+
         int cores = 4;
 
         DistrGenAlg dga = new DistrGenAlg(seed, heuristics, cores);
@@ -51,9 +51,8 @@ public class Runnable {
         System.out.println("Fitness: " + solution.getFitness());
         System.out.println("Time Taken: " + (end - start) + "ms");
         System.out.println("Heuristic combination: " + solution.getHeuCom());
-       // System.out.println("Solution: ");
-       // solution.print();
-        ///System.out.println("Objective Value: " + solution.getObjectiveValue());
+        System.out.println("Solution: ");
+        solution.print();
 
 
         System.out.println("\nPush Enter to Continue");

@@ -8,7 +8,7 @@ public class DeepSolution extends InitialSoln{
 
     private String heuristicCombination;
     private double fitness;
-    public double solution[] = new double[64];
+    public String solution;
 
 
     @Override
@@ -46,21 +46,23 @@ public class DeepSolution extends InitialSoln{
         //TODO make solution to string
         return "deep string";
     }
+    public void print() {
+        System.out.println(solution);
+    }
+
 
     public void createSolution(String filename) {
         DEEP sol = new DEEP(new File(filename));
         try {
-            sol.createSolution(heuristicCombination);
-            fitness = sol.parse_fitness(new File("deep_rastr.ini.log"));
-            solution = sol.getSolution();
+            String fitline = sol.createSolution(heuristicCombination);
+            String part2[] = fitline.split(" ");
+            fitness = Double.parseDouble(part2[0]);
+            String part3[] = fitline.split(" ");
+
+            solution = fitline;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-//    public int getObjectiveValue() {
-//        return solution.size();
-//    }
 
 }
