@@ -1,0 +1,153 @@
+diff --git a/config.h b/config.h
+index ee01ea8..ef2677a 100644
+--- a/config.h
++++ b/config.h
+@@ -2,7 +2,7 @@
+ /* config.h.in.  Generated from configure.ac by autoheader.  */
+ 
+ /* always defined to indicate that i18n is enabled */
+-#define ENABLE_NLS 1
++/* #undef ENABLE_NLS */
+ 
+ /* GETTEXT package name */
+ #define GETTEXT_PACKAGE "deepmethod"
+@@ -19,7 +19,7 @@
+ /* #undef HAVE_CFPREFERENCESCOPYAPPVALUE */
+ 
+ /* Define to 1 if you have the `dcgettext' function. */
+-#define HAVE_DCGETTEXT 1
++/* #undef HAVE_DCGETTEXT */
+ 
+ /* Define to 1 if you have the <dlfcn.h> header file. */
+ #define HAVE_DLFCN_H 1
+diff --git a/configure.ac b/configure.ac
+index e470b24..9dabf2f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -22,7 +22,7 @@ GETTEXT_PACKAGE=deepmethod
+ AC_SUBST(GETTEXT_PACKAGE)
+ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
+ AM_GLIB_GNU_GETTEXT
+-IT_PROG_INTLTOOL([0.35.0])
++IT_PROG_INTLTOOL
+ 
+ DEEPMETHOD_LOCALEDIR=[${datadir}/locale]
+ AC_SUBST(DEEPMETHOD_LOCALEDIR)
+diff --git a/libdeep/dparchive.c b/libdeep/dparchive.c
+index 762e4ba..a14b83e 100644
+--- a/libdeep/dparchive.c
++++ b/libdeep/dparchive.c
+@@ -21,8 +21,10 @@ DpArchive* dp_archive_init(DpPopulation* population){
+     DpArchive* newArchive = dp_archive_new(population->size, population->individ[0]->size);
+     for (int i = 0; i < population->size * 2; i++){
+         int i1, i2;
+-        i1 = i < population->size ? i : i - population->size;
+-        i2 = i1 == population->size - 1 ? 0 : i1 + 1;
++        // i1 = i < population->size ? i : i - population->size;
++        // i2 = i1 == population->size - 1 ? 0 : i1 + 1;
++        i1 = rand() % population->size;
++        i2 = rand() % population->size;
+         for (int j = 0; j < population->individ[0]->size; j++){
+             newArchive->difference_vectors[i]->value[j] = population->individ[i1]->x[j] - population->individ[i2]->x[j];
+         }
+diff --git a/libdeep/dpdeep.c b/libdeep/dpdeep.c
+index 2b610b8..c8b99ee 100644
+--- a/libdeep/dpdeep.c
++++ b/libdeep/dpdeep.c
+@@ -340,6 +340,7 @@ void main_dedupl(DpIndivid* my_trial, DpPopulation* population, DpDeepInfo* hdee
+     }
+ }
+ 
++// !!!
+ void dp_deep_generate_func (gpointer data, gpointer user_data)
+ {
+     int r1, r2, r3, r4;
+@@ -379,7 +380,9 @@ void dp_deep_generate_func (gpointer data, gpointer user_data)
+     my_trial->failures = 0;
+     my_trial->grads = 0;
+ 
++    int arch_id = g_rand_int_range (hrand, 0, population->ind_size);
+     DifferenceVector* vectorRead = hdeepinfo->archive->difference_vectors[my_id];
++    // DifferenceVector* vectorRead = hdeepinfo->archive->difference_vectors[arch_id];
+     DifferenceVector* vectorWrite = hdeepinfo->archive->difference_vectors[hdeepinfo->population_size + my_id];
+ 
+ //    dp_individ_recombination(recombination_control, hrand, my_trial, population->individ[r1], population->individ[r2], population->individ[r3], population->individ[r4], start_index, end_index);
+@@ -613,13 +616,17 @@ void dp_de_select_func (gpointer data, gpointer user_data)
+         population->individ[my_id] = my_trial;
+         trial->individ[my_id] = my_individ;
+         my_individ->age++;
+-        if (my_trial->useWriteVector)
++        if (my_trial->useWriteVector){
+             hdeepinfo->archive->difference_vectors[my_id] = hdeepinfo->archive->difference_vectors[my_id + hdeepinfo->population_size];
++        }
+     }
+     else{
+-        if (my_trial->useWriteVector)
++        if (my_trial->useWriteVector){
+             hdeepinfo->archive->difference_vectors[my_id] = hdeepinfo->archive->difference_vectors[my_id + hdeepinfo->population_size];
++        }
+     }
++    population->individ[my_id]->useWriteVector = FALSE;
++    trial->individ[my_id]->useWriteVector = FALSE;
+ }
+ 
+ void dp_deep_generate_step(DpDeepInfo*hdeepinfo)
+@@ -631,6 +638,19 @@ void dp_deep_generate_step(DpDeepInfo*hdeepinfo)
+     DpPopulation*trial = hdeepinfo->trial;
+     GError *gerror = NULL;   
+ 
++    for (int j = 0; j < population->individ[0]->size; j++)
++        printf("%g ", population->individ[population->imin]->x[j]);
++    printf("\n");
++
++//    printf("---------Genetration %d---------\n", population->aage);
++//    printf("\n\tPOPULATION:\n");
++//    for (int i = 0; i < population->size; i++){
++//        for (int j = 0; j < population->individ[0]->size; j++)
++//            printf("%g ", population->individ[i]->x[j]);
++//        printf("\n");
++//    }
++//    printf("\n\tARCHVIE:\n");
++
+     for ( individ_id = 0; individ_id < population->size; individ_id++ ) {
+         dp_deep_generate_func (GINT_TO_POINTER(individ_id + 1), (gpointer) hdeepinfo);
+     }
+diff --git a/libdeep/dpopt.c b/libdeep/dpopt.c
+index 2dbf7e0..cb6994e 100644
+--- a/libdeep/dpopt.c
++++ b/libdeep/dpopt.c
+@@ -126,6 +126,10 @@ void dp_opt_add_from_func_list(gchar**list, DpOpt *hopt, int order, GKeyFile*gkf
+ 				opt_type = H_OPT_NONE;
+ 				method_info = NULL;
+ 				dp_opt_add_func(hopt, dp_write_state, tau_flag, opt_type, order, method_info);
++			} else if (!g_strcmp0(list[i], "readstate")) {
++				opt_type = H_OPT_NONE;
++				method_info = NULL;
++				dp_opt_add_func(hopt, dp_read_state, tau_flag, opt_type, order, method_info);
+ 			} else if ( !g_strcmp0(list[i], "writepareto") ) {
+ 				opt_type = H_OPT_NONE;
+ 				method_info = NULL;
+@@ -822,6 +826,7 @@ DpLoopExitCode dp_read_state(DpLoop*hloop, gpointer user_data)
+ 	    return DP_LOOP_EXIT_ERROR;
+ 	  }
+ 	  fscanf(fp, "%e %e %e %e %d %e %d %e", &(hloop->w_time), &(hloop->u_time), &(hloop->start), &(hloop->finish), &(hloop->tau_counter), &(hopt->cost), &(hopt->stop_counter), &(hopt->old_cost));
++	  hopt->cancel_iter += hloop->tau_counter;
+ 	  switch (hopt->opt_type) {
+ 	  case H_OPT_DEEP:
+ 	    hdeepinfo = (DpDeepInfo*)(hopt->method_info);
+diff --git a/libdeep/dprecombination.c b/libdeep/dprecombination.c
+index 2f225eb..509164c 100644
+--- a/libdeep/dprecombination.c
++++ b/libdeep/dprecombination.c
+@@ -99,6 +99,11 @@ void dp_individ_recombination(DpRecombinationControl *control, GRand*hrand, DpIn
+     else{
+         archiveVector = vectorRead;
+     }
++
++//    for (int j = 0; j < individ->size; j++)
++//        printf("%g ", control->f[i] * archiveVector->value[j]);
++//    printf("\n");
++
+     // use g_rand_double(hrand) for generating random number [0, 1]!!!
+     // if rand > 0.5
+     //  arch_vector = arch_vector_write
